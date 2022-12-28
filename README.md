@@ -12,4 +12,4 @@
 
 # 鸣谢
 - [ArtPlayer](https://github.com/zhw2590582/ArtPlayer)
-- [VideoTogether]([https://2gether.video/zh-cn/](https://github.com/VideoTogether/VideoTogether))
+- [VideoTogether](https://github.com/VideoTogether/VideoTogether)
