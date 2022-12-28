@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8">
+    <title>宇宙究极无敌超级牛逼的播放器</title>
+    <script src="./packages/artplayer/dist/artplayer.js"></script>
+    <script src="./packages/extension.website.user.js"></script>
+</head>
+
+<body>
+    <div>
+        <!--输入视频地址-->
+        <a>视频（选择本地文件或输入网络地址）</a>
+        <input type="file" id="input_video" onchange="inputVideo()"><br>
+        <input type="text" id="url" value="" style="width:800px;resize:both;" />
+        <br />
+        <!--输入字幕地址-->
+        <a>字幕（选择本地文件或输入网络地址）</a>
+        <input type="file" id="input_subtitle" onchange="inputSubtitle()"><br>
+        <input type="text" id="subtitle" value="" style="width:800px;resize:both;" />
+        <br />
+        <div id="subtitleSettings" style="display: none;">
+            <a>字幕编码</a>
+            <!--下拉列表，选项为utf-8和gbk-->
+            <select id="subtitleEncode">
+                <option value="utf-8">utf-8</option>
+                <option value="gbk">gbk</option>
+            </select>
+            <!--滑动条，范围10~100，右侧显示数值-->
+            <a>字幕大小</a>
+            <input type="range" id="subtitlepix" min="10" max="50" value="30" />
+            <span id="subtitlepixvalue">30</span><a>px</a><br />
+        </div>
+
+        <button id="play">装载</button>
+
+        <!-- 单选框：启用多音轨 -->
+        <a id="enableAudioTrackTip">选择音轨</a>
+        <input type="checkbox" id="enableAudioTrack" />
+        <a id="AudioTracksSelectionTip" style="display: none;">音轨:</a>
+        <select id="AudioTracksSelection" style="display: none;">
+        </select>
+    </div>
+    <!-- 指定播放器容器 -->
+    <div>
+        <div class="artplayer-app" style="resize:both;overflow:auto;padding:10px;"></div>
+    </div>
+
+
+</body>
+
+<script>
+    // 创建播放器
+    function createPlayer(video_url, subtitle_url, subtitle_type, subtitle_encode) {
+        //delete player;
+        if (art) {
+            art.destroy();
+        }
+        //重新创建player container
+        //删除元素
+        var element = document.querySelector(".artplayer-app").parentElement;
+        element.removeChild(document.querySelector(".artplayer-app"));
+        //创建容器
+        element.innerHTML += '<div class="artplayer-app" style="resize:both;overflow:auto;padding:10px;"></div>';
+
+        //创建播放器
+        var subtitlepixvalue = document.getElementById("subtitlepixvalue");
+        var art = new Artplayer({
+            container: '.artplayer-app',
+            //取url为输入框的
+            url: video_url,
+            setting: true,
+            hotkey: true,
+            whitelist: ['*'],
+            //playsInline: true,
+            subtitle: {
+                url: subtitle_url,
+                //url: "blob:https://wp-1253316237.cos-website.ap-shanghai.myqcloud.com/9961c72e-4646-4012-a1b5-529d5739b9a2",
+                type: subtitle_type,
+                encoding: subtitle_encode,
+                style: {
+                    color: '#FFFFFF',
+                    //取滑动条的值
+                    fontSize: subtitlepixvalue.innerHTML + 'px',
+                },
+            },
+            fullscreen: true,
+            subtitleOffset: true,
+            playbackRate: true,
+
+        });
+        //当播放器加载完成后执行setAudioTrack();
+        art.on('ready', function () {
+            setAudioTrack();
+        });
+    }
+</script>
+
+<script>
+    //当checkbox的状态发生改变时
+    document.getElementById("enableAudioTrack").onchange = function () {
+        //模拟id=play的按钮的点击事件
+        document.getElementById("play").click();
+    }
+
+    //获取滑动条的值
+    var subtitlepix = document.getElementById("subtitlepix");
+    var subtitlepixvalue = document.getElementById("subtitlepixvalue");
+    subtitlepixvalue.innerHTML = subtitlepix.value;
+    subtitlepix.oninput = function () {
+        subtitlepixvalue.innerHTML = this.value;
+        //改变class为art-subtitle的font-size为滑动条的值
+        document.getElementsByClassName("art-subtitle")[0].style.fontSize = this.value + "px";
+    }
+
+
+    //播放按钮点击后
+    document.getElementById('play').onclick = function () {
+        var url = document.getElementById('url').value;
+        var subtitle = document.getElementById('subtitle').value;
+
+        if (url == "") {
+            return;
+        }
+        if (subtitle == "") {
+            createPlayer(url, "", "", "");
+            return;
+        }
+        var subtitleEncode = document.getElementById('subtitleEncode').value;
+        //本地链接
+        if (subtitle.startsWith("blob")) {
+            //获取input的文件名后缀
+            var subtitleType = document.getElementById('input_subtitle').files[0].name.split('.').pop();
+            createPlayer(url, subtitle, subtitleType, subtitleEncode);
+        //远程链接
+        } else {
+            var subtitleType = subtitle.substring(subtitle.lastIndexOf(".") + 1);
+            createPlayer(url, subtitle, subtitleType, subtitleEncode);
+        }
+    }
+
+</script>
+
+<script>
+
+    function inputVideo() {
+        var file = document.getElementById('input_video').files[0];
+        var url = URL.createObjectURL(file);
+        document.getElementById('url').value = url;
+    }
+
+    function inputSubtitle() {
+        var file = document.getElementById('input_subtitle').files[0];
+        var url = URL.createObjectURL(file);
+        document.getElementById('subtitle').value = url;
+        document.getElementById("subtitleSettings").style.display = "block";
+    }
+</script>
+
+<script>//设置音轨
+    //检测音轨
+    var AudioTracksSelection = document.getElementById("AudioTracksSelection");
+    function setAudioTrack() {
+        //如果document.getElementsByClassName("art-video")[0].audioTracks存在并且enableAudioTrack
+        if (document.getElementsByClassName("art-video")[0].audioTracks && document.getElementById("enableAudioTrack").checked) {
+            if ('WebkitAppearance' in document.documentElement.style)
+                var hasAudioTrack = document.getElementsByClassName("art-video")[0].audioTracks.length;
+            else if (document.getElementsByClassName("art-video")[0].mozHasAudio)
+                var hasAudioTrack = 1;
+            if (hasAudioTrack > 0) {
+
+                AudioTracksSelection.innerHTML = "";
+                for (var i = 0; i < hasAudioTrack; i++) {
+                    AudioTracksSelection.innerHTML += "<option value=" + i + ">" + document.getElementsByClassName("art-video")[0].audioTracks[i].language + "</option>";
+                }
+                AudioTracksSelection.style.display = "inline";
+                document.getElementById("AudioTracksSelectionTip").style.display = "inline";
+            }
+        } else if (document.getElementById("enableAudioTrack").checked) {
+            //弹出提示框
+            alert("请前往chrome://flags，搜索enable-experimental-web-platform-features，将已禁用改为已启用。");
+        } else {
+            AudioTracksSelection.style.display = "none";
+            document.getElementById("AudioTracksSelectionTip").style.display = "none";
+        }
+    }
+    //监听AudioTracksSelection改变
+    AudioTracksSelection.onchange = function () {
+        //获取当前视频时间
+        var currentTime = document.getElementsByClassName("art-video")[0].currentTime;
+        //将所有音轨设置成false
+        for (var i = 0; i < document.getElementsByClassName("art-video")[0].audioTracks.length; i++) {
+            document.getElementsByClassName("art-video")[0].audioTracks[i].enabled = false;
+        }
+        document.getElementsByClassName("art-video")[0].audioTracks[this.value].enabled = true;
+        //将视频设置为currentTime
+        document.getElementsByClassName("art-video")[0].currentTime = currentTime;
+    }
+</script>
+
+<style>
+    .artplayer-app {
+        width: 960px;
+        height: 540px;
+    }
+</style>
+
+</html>
