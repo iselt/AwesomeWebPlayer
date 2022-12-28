@@ -7,7 +7,8 @@
 - 可更改视频音轨
 - 内置VideoTogether插件，可同步播放视频
 ## 用法
-- 本项目为静态网页，可直接下载在本地打开或部署至网页服务器上
+- 已部署至Github Pages：https://iselt.github.io/AwesomeWebPlayer/
+- 本项目为静态网页，可直接下载在本地打开或部署至服务器上
 ## ToDo
 - 将字幕调整、音轨选择等选项迁移至ArtPlayer内置选项卡
 # 鸣谢
