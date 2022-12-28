@@ -11,6 +11,8 @@
 - 本项目为静态网页，可直接下载在本地打开或部署至服务器上
 ## ToDo
 - 将字幕调整、音轨选择等选项迁移至ArtPlayer内置选项卡
+- 美化页面
+- 优化代码逻辑
 # 鸣谢
 - [ArtPlayer](https://github.com/zhw2590582/ArtPlayer)
 - [VideoTogether](https://github.com/VideoTogether/VideoTogether)
