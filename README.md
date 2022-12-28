@@ -1,5 +1,5 @@
 # AwesomeWebPlayer
-- 专为一起看电影设计的多功能WEB播放器
+- 专为一起看电影设计的多功能Web播放器
 ![image](https://user-images.githubusercontent.com/101086473/209828192-9632e00e-e660-4d6e-bf14-7cb40987c64f.png)
 ## 功能
 - 可选择外置字幕
