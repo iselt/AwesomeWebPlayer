@@ -1,5 +1,5 @@
 # AwesomeWebPlayer
-基于Artplayer的多功能WEB播放器
+专为一起看电影设计的多功能WEB播放器
 ## 功能
 - 可选择外置字幕
 - 视频和字幕均可设置为本地文件
